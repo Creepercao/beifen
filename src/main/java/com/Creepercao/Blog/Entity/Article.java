@@ -33,6 +33,14 @@ public class Article {
     @Column
     private String name;
 
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
+
+
     public Article() {
     }
 
