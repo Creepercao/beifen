@@ -13,7 +13,7 @@ public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "AID")
-    private Long aid;
+    private Integer aid;
 
     @Column(name = "UUID")
     private Integer uuid;
@@ -44,7 +44,7 @@ public class Article {
         this.createdAt = createdAt;
     }
 
-    public void setAid(Long aid) {
+    public void setAid(Integer aid) {
         this.aid = aid;
     }
 
