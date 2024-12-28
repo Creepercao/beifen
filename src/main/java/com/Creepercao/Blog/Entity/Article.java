@@ -2,18 +2,14 @@ package com.Creepercao.Blog.Entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
-@Setter
 @Entity
 @Table(name = "article")
 public class Article {
-
+    // Getter 和 Setter 方法
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "AID")
@@ -28,8 +24,7 @@ public class Article {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    // 将 tags 存储为 JSON 字符串（或者可以使用逗号分隔的字符串等格式）
-    @Column(name = "tags", columnDefinition = "TEXT")
+    @Column(length = 255)
     private String tags;
 
     @Column(name = "created_at", nullable = true, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -38,11 +33,9 @@ public class Article {
     @Column
     private String name;
 
-    // 无参构造函数
     public Article() {
     }
 
-    // 带参数构造函数
     public Article(String title, String content, String tags, Integer uuid, LocalDateTime createdAt) {
         this.title = title;
         this.content = content;
@@ -50,25 +43,39 @@ public class Article {
         this.uuid = uuid;
         this.createdAt = createdAt;
     }
-    @PrePersist
-    public void prePersist() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now(); // 设置当前时间为创建时间
-        }
+
+    public void setAid(Integer aid) {
+        this.aid = aid;
     }
 
-    // 设置 tags 为 List<String> 类型
-    public void setTagsList(List<String> tagsList) {
-        this.tags = tagsList.stream().collect(Collectors.joining(",")); // 使用逗号分隔符将 List 转换为字符串
+    public void setUuid(Integer uuid) {
+        this.uuid = uuid;
     }
 
-    // 获取 tags 为 List<String> 类型
-    public List<String> getTagsList() {
-        if (this.tags != null && !this.tags.isEmpty()) {
-            return List.of(this.tags.split(",")); // 使用逗号分隔符将字符串转换为 List
-        }
-        return List.of(); // 如果没有标签，则返回空列表
+    public void setTitle(String title) {
+        this.title = title;
     }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
 
     @Override
     public String toString() {
@@ -79,7 +86,7 @@ public class Article {
                 ", content='" + content + '\'' +
                 ", tags='" + tags + '\'' +
                 ", createdAt=" + createdAt +
-                ", name='" + name + '\'' +
+                ", name=" + name +
                 '}';
     }
 }

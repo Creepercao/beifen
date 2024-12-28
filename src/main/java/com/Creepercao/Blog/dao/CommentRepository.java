@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    // 根据文章 aid 查找评论
+    // 根据文章 ID 查找评论
     List<Comment> findByArticleAid(Integer aid);
 }

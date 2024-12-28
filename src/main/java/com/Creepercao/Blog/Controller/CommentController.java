@@ -22,8 +22,8 @@ public class CommentController {
 
     // 根据文章 ID 获取所有评论
     @GetMapping("/article/{articleId}")
-    public List<Comment> getCommentsByArticleId(@PathVariable("articleId") Integer articleId) {
-        return commentService.getCommentsByArticleId(articleId);
+    public List<Comment> getCommentsByArticleId(@PathVariable("articleId") Integer aid) {
+        return commentService.getCommentsByArticleAid(aid);
     }
 
     // 删除评论

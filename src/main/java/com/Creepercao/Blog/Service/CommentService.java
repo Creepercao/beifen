@@ -19,8 +19,8 @@ public class CommentService {
     }
 
     // 根据文章 ID 获取评论
-    public List<Comment> getCommentsByArticleId(Integer articleId) {
-        return commentRepository.findByArticleAid(articleId);
+    public List<Comment> getCommentsByArticleAid(Integer aid) {
+        return commentRepository.findByArticleAid(aid);
     }
 
     // 检查评论是否存在

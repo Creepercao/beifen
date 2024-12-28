@@ -1,5 +1,6 @@
 package com.Creepercao.Blog.Controller;
 
+import com.Creepercao.Blog.Entity.PasswordChangeRequest;
 import com.Creepercao.Blog.Entity.User;
 import com.Creepercao.Blog.Service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -26,13 +27,14 @@ public class UserController {
             String token = UUID.randomUUID().toString(); // 生成一个随机 Token
             response.put("status", "success");
             response.put("message", "登录成功");
-            response.put("role", user);
+            response.put("role", user.getRole());
             response.put("uuid", user.getUuid());
+            response.put("email",user.getEmail());
             response.put("name", user.getName());
-            response.put("email", user.getEmail());
+            response.put("avatar", user.getAvatar());
+            response.put("register", user.getRegister());
             response.put("phone", user.getPhone());
             response.put("address", user.getAddress());
-            response.put("avatar", user.getAvatar());
             response.put("token", token); // 返回 Token
         } else {
             response.put("status", "fail");
@@ -68,17 +70,63 @@ public class UserController {
         return userService.getUserById(uuid);
     }
 
-    // 创建或更新用户
+    // 获取当前登录用户信息
+    @GetMapping("/me")
+    public User getCurrentUser(HttpSession session) {
+        // 假设已登录的用户信息存储在 session 中
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            return user;
+        } else {
+            throw new RuntimeException("用户未登录");
+        }
+    }
+    // 更新用户信息
     @PostMapping("/update")
-    public User updateUser(@RequestBody User user) {
-        // 如果前端提交了密码字段，应该忽略它
-        if (user.getPassword() != null) {
-            user.setPassword(null); // 忽略密码字段
+    public User updateUser(@RequestBody User updatedUser, HttpSession session) {
+        // 获取当前登录的用户
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser != null) {
+            // 更新当前用户的信息
+            currentUser.setName(updatedUser.getName());
+            currentUser.setEmail(updatedUser.getEmail());
+            currentUser.setPhone(updatedUser.getPhone());
+            currentUser.setAddress(updatedUser.getAddress());
+            // 保存更新后的用户
+            userService.saveUser(currentUser);
+            return currentUser;
+        } else {
+            throw new RuntimeException("用户未登录");
+        }
+    }
+    // 修改密码
+    @PutMapping("/changePassword")
+    public Map<String, String> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest, HttpSession session) {
+        // 创建返回结果
+        Map<String, String> response = new HashMap<>();
+
+        // 获取当前登录的用户
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser != null) {
+            // 检查旧密码是否正确
+            if (currentUser.getPassword().equals(passwordChangeRequest.getOldPassword())) {
+                // 如果旧密码正确，更新密码
+                currentUser.setPassword(passwordChangeRequest.getNewPassword());
+                userService.saveUser(currentUser);
+
+                response.put("status", "success");
+                response.put("message", "密码修改成功");
+            } else {
+                response.put("status", "error");
+                response.put("message", "旧密码错误");
+            }
+        } else {
+            response.put("status", "error");
+            response.put("message", "用户未登录");
         }
 
-        return userService.saveUser(user); // 只保存更新的字段
+        return response;
     }
-
 
     // 删除用户
     @DeleteMapping("/{uuid}")
@@ -102,32 +150,6 @@ public class UserController {
     @GetMapping("/exists/name")
     public boolean checkUserNameExists(@RequestParam String name) {
         return userService.checkUserNameExists(name);
-    }
-
-    @PutMapping("/changePassword")
-    public Map<String, Object> changePassword(@RequestParam String oldPassword, @RequestParam String newPassword, HttpSession session) {
-        Map<String, Object> response = new HashMap<>();
-        User user = (User) session.getAttribute("user"); // 获取当前登录的用户
-
-        if (user == null) {
-            response.put("status", "fail");
-            response.put("message", "用户未登录");
-            return response;
-        }
-
-        boolean isPasswordValid = userService.checkOldPassword(user.getUuid(), oldPassword);
-        if (!isPasswordValid) {
-            response.put("status", "fail");
-            response.put("message", "旧密码错误");
-            return response;
-        }
-
-        // 更新密码
-        userService.updatePassword(user.getUuid(), newPassword);
-
-        response.put("status", "success");
-        response.put("message", "密码更新成功");
-        return response;
     }
 
     // 检查邮箱是否已使用
