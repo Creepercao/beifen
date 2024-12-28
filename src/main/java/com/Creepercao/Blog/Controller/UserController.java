@@ -27,7 +27,6 @@ public class UserController {
             response.put("status", "success");
             response.put("message", "登录成功");
             response.put("token", token); // 返回 Token
-            // Optional: Store the token in a cookie or localStorage if needed
         } else {
             response.put("status", "fail");
             response.put("message", "用户名或密码错误");
