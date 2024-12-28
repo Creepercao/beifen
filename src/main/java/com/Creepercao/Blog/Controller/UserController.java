@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -18,8 +19,8 @@ public class UserController {
 
     // 用户登录验证
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestParam String name, @RequestParam String password, HttpSession session) {
-        User user = userService.login(name, password);
+    public Map<String, Object> login(@RequestParam Integer Useruuid, @RequestParam String password, HttpSession session) {
+        User user = userService.login(Useruuid, password);
         Map<String, Object> response = new HashMap<>();
         if (user != null) {
             session.setAttribute("user", user); // 将用户信息存入会话
@@ -157,4 +158,55 @@ public class UserController {
     public boolean checkEmailExists(@RequestParam String email) {
         return userService.checkEmailExists(email);
     }
+    // 用户注册
+    @PostMapping("/save")
+    public Map<String, Object> registerUser(@RequestBody User newUser) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // 检查邮箱是否已被使用
+            if (userService.checkEmailExists(newUser.getEmail())) {
+                response.put("status", "fail");
+                response.put("message", "邮箱已被注册");
+                return response;
+            }
+
+            // 设置其他默认信息
+            newUser.setRole(0); // 默认角色（非管理员）
+            newUser.setRegister(LocalDateTime.now()); // 设置注册时间
+            // 保存用户
+            userService.saveUser(newUser);  // 保存用户，uuid由数据库自增生成
+
+            // 返回成功消息，不返回uuid
+            response.put("status", "success");
+            response.put("message", "注册成功");
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "注册失败，请稍后再试");
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    // 新接口：根据邮箱获取用户UUID
+    @GetMapping("/getUUID")
+    public Map<String, Object> getUUIDByEmail(@RequestParam String email) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            User user = userService.getUserByEmail(email);
+            if (user != null) {
+                response.put("status", "success");
+                response.put("uuid", user.getUuid());
+            } else {
+                response.put("status", "fail");
+                response.put("message", "用户未找到");
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "查询失败，请稍后再试");
+        }
+        return response;
+    }
+
+
+
 }

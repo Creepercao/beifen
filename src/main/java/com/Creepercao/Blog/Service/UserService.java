@@ -68,8 +68,8 @@ public class UserService {
     }
 
     // 验证用户的登录信息
-    public User login(String name, String password) {
-        return userRepository.findByNameAndPassword(name, password); // 使用数据库查询优化
+    public User login(Integer uuid, String password) {
+        return userRepository.findByUuidAndPassword(uuid, password); // 使用数据库查询优化
     }
 
     // 检查用户名是否存在
@@ -115,4 +115,7 @@ public class UserService {
         return false; // 如果没有找到用户，返回 false
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }
