@@ -26,6 +26,8 @@ public class UserController {
             String token = UUID.randomUUID().toString(); // 生成一个随机 Token
             response.put("status", "success");
             response.put("message", "登录成功");
+            response.put("role", user.getRole());
+            response.put("uuid", user.getUuid());
             response.put("token", token); // 返回 Token
         } else {
             response.put("status", "fail");

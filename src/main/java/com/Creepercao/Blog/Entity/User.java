@@ -35,6 +35,8 @@ public class User implements Serializable {
     @Column(nullable = true, length = 255, columnDefinition = "varchar(255) default 'src/main/resources/img/default.png'")
     private String avatar;
 
+    @Column
+    private Integer role;
     // 无参构造器（JPA 要求）
     public User() {
     }
@@ -115,6 +117,14 @@ public class User implements Serializable {
         this.avatar = avatar;
     }
 
+    public Integer getRole() {
+        return role;
+    }
+
+    public void setRole(Integer role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -126,6 +136,7 @@ public class User implements Serializable {
                 ", register=" + register +
                 ", password='" + password + '\'' +
                 ", avatar='" + avatar + '\'' +
+                ", role=" + role +
                 '}';
     }
 }

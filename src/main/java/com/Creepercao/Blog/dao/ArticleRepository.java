@@ -17,4 +17,5 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     // 根据标题包含的关键词查找文章
     List<Article> findByTitleContaining(String keyword);
+
 }
