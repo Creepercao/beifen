@@ -31,9 +31,24 @@ public class UserService {
         if (user.getAvatar() == null || user.getAvatar().isEmpty()) {
             user.setAvatar("/img/default.png");
         }
-        if (user.getRegister() == null) {
-            user.setRegister(LocalDateTime.now());
+        if (user.getUuid() != null) {
+            // 检查用户是否存在
+            Optional<User> existingUser = userRepository.findById(user.getUuid());
+            if (existingUser.isPresent()) {
+                User dbUser = existingUser.get();
+                // 更新现有用户的属性
+                dbUser.setName(user.getName());
+                dbUser.setEmail(user.getEmail());
+                dbUser.setPhone(user.getPhone());
+                dbUser.setAddress(user.getAddress());
+                // 忽略密码字段，除非需要更新
+                if (user.getPassword() != null) {
+                    dbUser.setPassword(user.getPassword());
+                }
+                return userRepository.save(dbUser); // 更新现有用户
+            }
         }
+        // 如果没有找到现有用户，执行插入操作
         return userRepository.save(user);
     }
 
@@ -84,4 +99,20 @@ public class UserService {
         Optional<User> userOptional = userRepository.findById(uuid);
         return userOptional.map(User::getName).orElse(null);  // 如果找不到用户，返回null
     }
+
+    public boolean checkOldPassword(Integer uuid, String oldPassword) {
+        // 获取用户信息
+        Optional<User> optionalUser = userRepository.findById(uuid); // 假设你通过 UserRepository 查询用户
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            // 获取数据库中存储的明文密码
+            String storedPassword = user.getPassword();
+
+            // 比对输入的旧密码和存储的密码
+            return storedPassword.equals(oldPassword); // 直接对比密码
+        }
+        return false; // 如果没有找到用户，返回 false
+    }
+
 }

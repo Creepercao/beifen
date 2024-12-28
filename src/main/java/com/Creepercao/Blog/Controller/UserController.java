@@ -26,8 +26,13 @@ public class UserController {
             String token = UUID.randomUUID().toString(); // 生成一个随机 Token
             response.put("status", "success");
             response.put("message", "登录成功");
-            response.put("role", user.getRole());
+            response.put("role", user);
             response.put("uuid", user.getUuid());
+            response.put("name", user.getName());
+            response.put("email", user.getEmail());
+            response.put("phone", user.getPhone());
+            response.put("address", user.getAddress());
+            response.put("avatar", user.getAvatar());
             response.put("token", token); // 返回 Token
         } else {
             response.put("status", "fail");
@@ -64,10 +69,16 @@ public class UserController {
     }
 
     // 创建或更新用户
-    @PostMapping("/updata")
-    public User saveUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    @PostMapping("/update")
+    public User updateUser(@RequestBody User user) {
+        // 如果前端提交了密码字段，应该忽略它
+        if (user.getPassword() != null) {
+            user.setPassword(null); // 忽略密码字段
+        }
+
+        return userService.saveUser(user); // 只保存更新的字段
     }
+
 
     // 删除用户
     @DeleteMapping("/{uuid}")
@@ -91,6 +102,32 @@ public class UserController {
     @GetMapping("/exists/name")
     public boolean checkUserNameExists(@RequestParam String name) {
         return userService.checkUserNameExists(name);
+    }
+
+    @PutMapping("/changePassword")
+    public Map<String, Object> changePassword(@RequestParam String oldPassword, @RequestParam String newPassword, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        User user = (User) session.getAttribute("user"); // 获取当前登录的用户
+
+        if (user == null) {
+            response.put("status", "fail");
+            response.put("message", "用户未登录");
+            return response;
+        }
+
+        boolean isPasswordValid = userService.checkOldPassword(user.getUuid(), oldPassword);
+        if (!isPasswordValid) {
+            response.put("status", "fail");
+            response.put("message", "旧密码错误");
+            return response;
+        }
+
+        // 更新密码
+        userService.updatePassword(user.getUuid(), newPassword);
+
+        response.put("status", "success");
+        response.put("message", "密码更新成功");
+        return response;
     }
 
     // 检查邮箱是否已使用

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.util.StringUtils;
+
+import jakarta.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,6 +28,9 @@ public class ArticleController {
     @Autowired
     private ArticleRepository articleRepository;
 
+    @Autowired
+    private ServletContext servletContext;  // 用于获取项目根路径
+
     // 获取所有文章
     @GetMapping
     public List<Article> getAllArticles() {
@@ -35,7 +40,6 @@ public class ArticleController {
     // 根据 uuid 获取所有文章
     @GetMapping("/uuid/{uuid}")
     public List<Article> getArticlesByUuid(@PathVariable("uuid") Integer uuid) {
-        // 根据 uuid 查找所有相关的文章
         return articleRepository.findByUuid(uuid);
     }
 
@@ -57,7 +61,6 @@ public class ArticleController {
             // 如果文章主体内容存在图片或附件，保存文件并处理路径
             String content = article.getContent();
             if (content.contains("src=\"/article")) {
-                // 假设图片的路径以"/article"为前缀，我们将图片保存到特定路径
                 String updatedContent = saveImagesFromContent(content);
                 article.setContent(updatedContent);
             }
@@ -69,17 +72,32 @@ public class ArticleController {
             return "保存文章失败";
         }
     }
+
+    // 上传图片接口
     @PostMapping("/upload-image")
     public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
-        String uploadDir = "/path/to/save/images/";  // 图片存储路径
-        String fileName = UUID.randomUUID().toString() + ".jpg";  // 或根据需要处理文件名
+        // 获取项目的上传目录路径
+        String projectRootPath = servletContext.getRealPath("/");
+
+        // 设置图片存储路径为项目根目录下的 uploads 目录
+        String uploadDir = projectRootPath + "img/";
+
+        // 创建上传目录（如果没有）
+        File directory = new File(uploadDir);
+        if (!directory.exists()) {
+            directory.mkdirs();  // 创建目录
+        }
+
+        // 生成文件名（使用 UUID 避免重名）
+        String fileName = UUID.randomUUID().toString() + ".jpg";  // 你可以根据需要修改文件后缀
+        File destFile = new File(uploadDir + fileName);
+
         try {
             // 保存文件到指定路径
-            File destFile = new File(uploadDir + fileName);
             file.transferTo(destFile);
 
             // 返回图片的 URL（假设已配置静态资源映射）
-            String imageUrl = "/article/" + fileName;
+            String imageUrl = "/img/" + fileName;
             Map<String, String> response = new HashMap<>();
             response.put("url", imageUrl);
 
@@ -104,7 +122,7 @@ public class ArticleController {
             String imagePath = matcher.group(1).substring(1);  // 去掉前缀"/"
 
             // 假设图片存储路径
-            File file = new File("article", imagePath);  // 将图片路径构造为本地路径
+            File file = new File("uploads", imagePath);  // 将图片路径构造为本地路径
             if (!file.exists()) {
                 Files.createDirectories(Paths.get(file.getParent())); // 创建目录
                 // 假设这里有上传文件的逻辑，文件需要转移到本地
@@ -113,7 +131,7 @@ public class ArticleController {
             }
 
             // 替换匹配的路径
-            matcher.appendReplacement(updatedContent, "src=\"/article" + imagePath + "\"");
+            matcher.appendReplacement(updatedContent, "src=\"/img/" + imagePath + "\"");
         }
 
         // 完成替换操作，返回新的内容

@@ -26,7 +26,7 @@ public class User implements Serializable {
     @Column(nullable = true, length = 255) // 可空字段，最大长度 255
     private String address;
 
-    @Column(name = "register", nullable = false, columnDefinition = "DATETIME") // 非空字段
+    @Column(name = "register", columnDefinition = "DATETIME") // 非空字段
     private LocalDateTime register;
 
     @Column(nullable = true, length = 255) // 可空字段，最大长度 255，默认值为 null
