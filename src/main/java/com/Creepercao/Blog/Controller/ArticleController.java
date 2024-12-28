@@ -91,7 +91,6 @@ public class ArticleController {
         // 生成文件名（使用 UUID 避免重名）
         String fileName = UUID.randomUUID().toString() + ".jpg";  // 你可以根据需要修改文件后缀
         File destFile = new File(uploadDir + fileName);
-
         try {
             // 保存文件到指定路径
             file.transferTo(destFile);

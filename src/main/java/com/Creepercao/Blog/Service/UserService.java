@@ -41,6 +41,7 @@ public class UserService {
                 dbUser.setEmail(user.getEmail());
                 dbUser.setPhone(user.getPhone());
                 dbUser.setAddress(user.getAddress());
+                dbUser.setAvatar(user.getAvatar());
                 // 忽略密码字段，除非需要更新
                 if (user.getPassword() != null) {
                     dbUser.setPassword(user.getPassword());

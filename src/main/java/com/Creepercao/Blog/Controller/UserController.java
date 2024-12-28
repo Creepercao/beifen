@@ -3,10 +3,17 @@ package com.Creepercao.Blog.Controller;
 import com.Creepercao.Blog.Entity.PasswordChangeRequest;
 import com.Creepercao.Blog.Entity.User;
 import com.Creepercao.Blog.Service.UserService;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -16,6 +23,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ServletContext servletContext;  // 用于获取项目根路径
 
     // 用户登录验证
     @PostMapping("/login")
@@ -204,6 +214,61 @@ public class UserController {
             response.put("status", "error");
             response.put("message", "查询失败，请稍后再试");
         }
+        return response;
+    }
+
+    @PostMapping("/uploadAvatar")
+    public Map<String, Object> uploadAvatar(@RequestParam("avatar") MultipartFile file, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+
+        // 获取当前登录的用户
+        User currentUser = (User) session.getAttribute("user");
+
+        if (currentUser != null) {
+            try {
+                // 获取项目根目录路径
+                String projectRootPath = servletContext.getRealPath("/");
+
+                // 设置图片存储路径为项目根目录下的 avatar 目录
+                String uploadDir = projectRootPath + "img/avatar/"; // 你可以根据需要调整这个路径
+
+                // 创建上传目录（如果没有）
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs(); // 创建目录
+                }
+
+                // 获取文件扩展名
+                String originalFilename = file.getOriginalFilename();
+                String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+                // 生成文件名（使用用户UUID避免重名）
+                String newFilename = currentUser.getUuid() + fileExtension; // 使用用户UUID作为文件名
+
+                // 将文件保存到服务器指定目录
+                File destFile = new File(uploadDir + newFilename);
+                file.transferTo(destFile);
+
+                // 更新用户头像 URL（假设存储路径为 '/img/avatar/uuid.jpg'）
+                String avatarUrl = "/img/avatar/" + newFilename;
+                currentUser.setAvatar(avatarUrl); // 更新用户头像路径
+                userService.saveUser(currentUser); // 保存更新后的用户信息
+
+                // 返回上传成功的响应
+                response.put("status", "success");
+                response.put("message", "头像上传成功");
+                response.put("avatar", avatarUrl); // 返回更新后的头像路径
+
+            } catch (IOException e) {
+                response.put("status", "error");
+                response.put("message", "文件上传失败");
+                e.printStackTrace();
+            }
+        } else {
+            response.put("status", "error");
+            response.put("message", "用户未登录");
+        }
+
         return response;
     }
 
