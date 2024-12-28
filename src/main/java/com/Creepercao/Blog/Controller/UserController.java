@@ -28,6 +28,12 @@ public class UserController {
             response.put("message", "登录成功");
             response.put("role", user.getRole());
             response.put("uuid", user.getUuid());
+            response.put("email",user.getEmail());
+            response.put("name", user.getName());
+            response.put("avatar", user.getAvatar());
+            response.put("register", user.getRegister());
+            response.put("phone", user.getPhone());
+            response.put("address", user.getAddress());
             response.put("token", token); // 返回 Token
         } else {
             response.put("status", "fail");
