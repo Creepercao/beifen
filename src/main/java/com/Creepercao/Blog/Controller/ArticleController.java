@@ -121,6 +121,11 @@ public class ArticleController {
         }
     }
 
+    @PostMapping("/search")
+    public ResponseEntity<List<Article>> searchArticles(@RequestParam(value = "title", required = false) String title) {
+        return ResponseEntity.ok(articleRepository.findByTitleContaining(title));
+    }
+
     // 点赞功能
     @PostMapping("/{id}/like")
     public ResponseEntity<Article> likeArticle(@PathVariable("id") Integer id) {

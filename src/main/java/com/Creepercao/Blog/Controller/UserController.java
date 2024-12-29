@@ -271,7 +271,12 @@ public class UserController {
 
         return response;
     }
-
-
-
+    @GetMapping("/isAdmin")
+    public boolean isAdmin(HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser != null) {
+            return currentUser.getRole() == 1;
+        }
+        return false;
+    }
 }

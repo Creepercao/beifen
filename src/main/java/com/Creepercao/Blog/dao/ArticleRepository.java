@@ -15,7 +15,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     // 根据 UUID 查找文章
     List<Article> findByUuid(Integer uuid);
 
-    // 根据标题包含的关键词查找文章
-    List<Article> findByTitleContaining(String keyword);
+    // 根据标题模糊搜索
+    List<Article> findByTitleContaining(String title);
+
 
 }
