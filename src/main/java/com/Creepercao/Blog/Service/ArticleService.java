@@ -21,7 +21,7 @@ public class ArticleService {
     }
 
     // 根据文章ID获取文章
-    public Optional<Article> getArticleById(Long aid) {
+    public Optional<Article> getArticleById(Integer aid) {
         return articleRepository.findById(aid);
     }
 
@@ -31,7 +31,7 @@ public class ArticleService {
     }
 
     // 删除文章
-    public void deleteArticle(Long aid) {
+    public void deleteArticle(Integer aid) {
         articleRepository.deleteById(aid);
     }
 
@@ -40,6 +40,16 @@ public class ArticleService {
         return articleRepository.findAll().stream()
                 .filter(article -> article.getTitle().toLowerCase().contains(title.toLowerCase()))
                 .toList();
+    }
+    public Article likeArticle(Integer aid) {
+        Optional<Article> articleOptional = articleRepository.findById(aid);
+        if (articleOptional.isPresent()) {
+            Article article = articleOptional.get();
+            article.setLikes(article.getLikes() + 1);  // 增加点赞数
+            return articleRepository.save(article);  // 更新到数据库
+        } else {
+            throw new RuntimeException("Article not found with AID: " + aid);
+        }
     }
 
 }

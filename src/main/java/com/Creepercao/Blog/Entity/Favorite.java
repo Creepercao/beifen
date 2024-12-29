@@ -16,7 +16,6 @@ public class Favorite {
     @Column
     private Integer aid;
 
-    @Id
     @Column
     private Integer uuid;
 

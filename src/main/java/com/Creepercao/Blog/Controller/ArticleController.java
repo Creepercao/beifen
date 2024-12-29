@@ -41,7 +41,6 @@ public class ArticleController {
         return articleRepository.findAll(pageable).getContent();
     }
 
-
     // 根据 uuid 获取所有文章
     @GetMapping("/uuid/{uuid}")
     public List<Article> getArticlesByUuid(@PathVariable("uuid") Integer uuid) {
@@ -50,7 +49,7 @@ public class ArticleController {
 
     // 删除文章
     @DeleteMapping("/{id}")
-    public String deleteArticle(@PathVariable("id") Long id) {
+    public String deleteArticle(@PathVariable("id") Integer id) {
         if (articleRepository.existsById(id)) {
             articleRepository.deleteById(id);
             return "文章删除成功";
@@ -58,8 +57,9 @@ public class ArticleController {
             return "文章未找到";
         }
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Article> getArticle(@PathVariable("id") Long id) {
+    public ResponseEntity<Article> getArticle(@PathVariable("id") Integer id) {
         Article article = articleRepository.findById(id).orElse(null);
         if (article != null) {
             return ResponseEntity.ok(article);
@@ -67,6 +67,7 @@ public class ArticleController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
     // 保存或更新文章
     @PostMapping
     public String saveOrUpdateArticle(@RequestBody Article article) {
@@ -120,6 +121,19 @@ public class ArticleController {
         }
     }
 
+    // 点赞功能
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Article> likeArticle(@PathVariable("id") Integer id) {
+        Article article = articleRepository.findById(id).orElse(null);
+        if (article != null) {
+            article.setLikes(article.getLikes() + 1);  // 增加点赞数
+            articleRepository.save(article);  // 保存更新后的文章
+            return ResponseEntity.ok(article);  // 返回更新后的文章
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // 文章未找到
+        }
+    }
+
     // 将文章内容中的图片保存到本地并更新路径
     private String saveImagesFromContent(String content) throws IOException {
         // 正则表达式：匹配 src 属性中的路径
@@ -146,7 +160,6 @@ public class ArticleController {
             matcher.appendReplacement(updatedContent, "src=\"/img/" + imagePath + "\"");
         }
 
-        // 完成替换操作，返回新的内容
         matcher.appendTail(updatedContent);
         return updatedContent.toString();
     }
