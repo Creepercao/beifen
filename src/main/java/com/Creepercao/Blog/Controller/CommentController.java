@@ -20,10 +20,16 @@ public class CommentController {
         return commentService.getAllComments();
     }
 
-    // 根据文章 ID 获取所有评论
+    // 根据文章 ID 获取评论
     @GetMapping("/article/{articleId}")
-    public List<Comment> getCommentsByArticleId(@PathVariable("articleId") Integer aid) {
-        return commentService.getCommentsByArticleAid(aid);
+    public List<Comment> getCommentsByArticleId(@PathVariable("articleId") Integer articleId) {
+        return commentService.getCommentsByArticleId(articleId);
+    }
+
+    // 根据用户 UUID 获取评论
+    @GetMapping("/user/{userUuid}")
+    public List<Comment> getCommentsByUserUuid(@PathVariable("userUuid") String userUuid) {
+        return commentService.getCommentsByUserUuid(userUuid);
     }
 
     // 删除评论
@@ -37,9 +43,9 @@ public class CommentController {
         }
     }
 
-    // 保存或更新评论
+    // 保存评论
     @PostMapping
-    public String saveOrUpdateComment(@RequestBody Comment comment) {
+    public String saveComment(@RequestBody Comment comment) {
         commentService.saveComment(comment);
         return "评论保存成功";
     }

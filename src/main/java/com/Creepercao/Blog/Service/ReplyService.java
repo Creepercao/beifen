@@ -20,7 +20,7 @@ public class ReplyService {
 
     // 根据评论 ID 获取回复
     public List<Reply> getRepliesByCommentId(Integer commentId) {
-        return replyRepository.findByCommentId(commentId);
+        return replyRepository.findByComment(commentId);
     }
 
     // 检查回复是否存在

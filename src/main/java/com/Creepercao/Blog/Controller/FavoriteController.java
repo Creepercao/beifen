@@ -31,7 +31,6 @@ public class FavoriteController {
                 return ResponseEntity.ok("取消收藏成功");
             }
         } catch (Exception e) {
-            // 如果收藏操作失败，返回错误信息
             return ResponseEntity.status(500).body("收藏操作失败: " + e.getMessage());
         }
     }

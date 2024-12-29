@@ -8,5 +8,5 @@ import java.util.List;
 public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 
     // 根据评论 ID 查找回复
-    List<Reply> findByCommentId(Integer commentId);
+    List<Reply> findByComment(Integer commentId);
 }

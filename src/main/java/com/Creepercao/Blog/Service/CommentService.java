@@ -19,11 +19,16 @@ public class CommentService {
     }
 
     // 根据文章 ID 获取评论
-    public List<Comment> getCommentsByArticleAid(Integer aid) {
-        return commentRepository.findByArticleAid(aid);
+    public List<Comment> getCommentsByArticleId(Integer articleId) {
+        return commentRepository.findByArticleId(articleId);
     }
 
-    // 检查评论是否存在
+    // 根据用户 UUID 获取评论
+    public List<Comment> getCommentsByUserUuid(String userUuid) {
+        return commentRepository.findByUserUuid(userUuid);
+    }
+
+    // 判断评论是否存在
     public boolean existsById(Integer id) {
         return commentRepository.existsById(id);
     }
@@ -33,8 +38,8 @@ public class CommentService {
         commentRepository.deleteById(id);
     }
 
-    // 保存或更新评论
-    public Comment saveComment(Comment comment) {
-        return commentRepository.save(comment);
+    // 保存评论
+    public void saveComment(Comment comment) {
+        commentRepository.save(comment);
     }
 }

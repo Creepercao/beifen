@@ -1,92 +1,79 @@
 package com.Creepercao.Blog.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Getter
 @Entity // 标注为 JPA 实体类
 @Table(name = "comments") // 对应数据库中的 comments 表
 public class Comment implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
+    // Getter 和 Setter 方法
     @Id // 主键
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 主键自增策略
     @Column(name = "id") // 对应数据库中的列名
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY) // 多对一关系，评论属于一个文章
-    @JoinColumn(name = "article_id", referencedColumnName = "AID", nullable = false)
-    private Article article; // 文章实体
+    @Column(name = "article_id", nullable = false) // 存储文章的 ID，外键
+    private Integer articleId; // 文章的 ID
 
-    @ManyToOne(fetch = FetchType.LAZY) // 多对一关系，评论属于一个用户
-    @JoinColumn(name = "user_uuid", referencedColumnName = "UUID", nullable = false)
-    private User user; // 用户实体
+    @Column(name = "user_uuid", nullable = false) // 存储用户的 UUID，外键
+    private String userUuid; // 用户的 UUID
 
     @Column(nullable = false, columnDefinition = "TEXT") // 评论内容
     private String content;
 
-    @Column(nullable = false, columnDefinition = "DATETIME") // 评论时间
+    @Column(nullable = false, columnDefinition = "DATETIME") // 评论时间，默认为当前时间
     private LocalDateTime time;
 
-    @Column(nullable = true) // 点赞数
+    @Column(nullable = true, columnDefinition = "INT DEFAULT 0") // 点赞数，默认为 0
     private Integer likes;
 
+    @PrePersist
+    public void prePersist() {
+        if (this.time == null) {
+            this.time = LocalDateTime.now();
+        }
+        if (this.likes == null)
+            this.likes = 0;
+    }
     // 无参构造器
     public Comment() {
     }
 
     // 全参构造器
-    public Comment(Article article, User user, String content, LocalDateTime time, Integer likes) {
-        this.article = article;
-        this.user = user;
+    public Comment(Integer articleId, String userUuid, String content, LocalDateTime time, Integer likes) {
+        this.articleId = articleId;
+        this.userUuid = userUuid;
         this.content = content;
         this.time = time;
         this.likes = likes;
-    }
-
-    // Getter 和 Setter 方法
-    public Integer getId() {
-        return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
     }
 
-    public Article getArticle() {
-        return article;
+    public void setArticleId(Integer articleId) {
+        this.articleId = articleId;
     }
 
-    public void setArticle(Article article) {
-        this.article = article;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getContent() {
-        return content;
+    public void setUserUuid(String userUuid) {
+        this.userUuid = userUuid;
     }
 
     public void setContent(String content) {
         this.content = content;
     }
 
-    public LocalDateTime getTime() {
-        return time;
-    }
-
     public void setTime(LocalDateTime time) {
         this.time = time;
-    }
-
-    public Integer getLikes() {
-        return likes;
     }
 
     public void setLikes(Integer likes) {
@@ -97,8 +84,8 @@ public class Comment implements Serializable {
     public String toString() {
         return "Comment{" +
                 "id=" + id +
-                ", article=" + article +
-                ", user=" + user +
+                ", articleId=" + articleId +
+                ", userUuid='" + userUuid + '\'' +
                 ", content='" + content + '\'' +
                 ", time=" + time +
                 ", likes=" + likes +
