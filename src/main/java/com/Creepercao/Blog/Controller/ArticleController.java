@@ -3,6 +3,8 @@ package com.Creepercao.Blog.Controller;
 import com.Creepercao.Blog.Entity.Article;
 import com.Creepercao.Blog.dao.ArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +35,12 @@ public class ArticleController {
 
     // 获取所有文章
     @GetMapping
-    public List<Article> getAllArticles() {
-        return articleRepository.findAll();
+    public List<Article> getAllArticles(@RequestParam(value = "page", defaultValue = "1") int page,
+                                        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        return articleRepository.findAll(pageable).getContent();
     }
+
 
     // 根据 uuid 获取所有文章
     @GetMapping("/uuid/{uuid}")
@@ -53,7 +58,15 @@ public class ArticleController {
             return "文章未找到";
         }
     }
-
+    @GetMapping("/{id}")
+    public ResponseEntity<Article> getArticle(@PathVariable("id") Long id) {
+        Article article = articleRepository.findById(id).orElse(null);
+        if (article != null) {
+            return ResponseEntity.ok(article);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
     // 保存或更新文章
     @PostMapping
     public String saveOrUpdateArticle(@RequestBody Article article) {
