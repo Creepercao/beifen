@@ -279,4 +279,38 @@ public class UserController {
         }
         return false;
     }
+    @PostMapping("/update/{uuid}")
+    public Map<String, Object> updateSpecificUser(@PathVariable Integer uuid, @RequestBody User updatedUser) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // 获取要更新的用户
+            Optional<User> userOptional = userService.getUserById(uuid);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+
+                // 更新用户的各个属性
+                if (updatedUser.getName() != null) user.setName(updatedUser.getName());
+                if (updatedUser.getEmail() != null) user.setEmail(updatedUser.getEmail());
+                if (updatedUser.getPhone() != null) user.setPhone(updatedUser.getPhone());
+                if (updatedUser.getAddress() != null) user.setAddress(updatedUser.getAddress());
+                if (updatedUser.getRole()!=null) user.setRole(updatedUser.getRole());
+                // 如果有需要修改的字段，可以继续添加
+
+                // 保存更新后的用户
+                userService.saveUser(user);
+
+                response.put("status", "success");
+                response.put("message", "用户信息更新成功");
+                response.put("user", user);  // 返回更新后的用户信息
+            } else {
+                response.put("status", "fail");
+                response.put("message", "用户未找到");
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "更新失败，请稍后再试");
+            e.printStackTrace();
+        }
+        return response;
+    }
 }

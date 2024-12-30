@@ -19,6 +19,7 @@ public class Article {
     private Integer aid;
 
     @Setter
+    @Getter
     @Column(name = "UUID")
     private Integer uuid;
 
