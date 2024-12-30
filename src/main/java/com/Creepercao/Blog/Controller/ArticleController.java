@@ -33,13 +33,11 @@ public class ArticleController {
     @Autowired
     private ServletContext servletContext;  // 用于获取项目根路径
 
-    // 获取所有文章
     @GetMapping
-    public List<Article> getAllArticles(@RequestParam(value = "page", defaultValue = "1") int page,
-                                        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
-        Pageable pageable = PageRequest.of(page - 1, pageSize);
-        return articleRepository.findAll(pageable).getContent();
+    public List<Article> getAllArticles() {
+        return articleRepository.findAll();
     }
+
 
     // 根据 uuid 获取所有文章
     @GetMapping("/uuid/{uuid}")

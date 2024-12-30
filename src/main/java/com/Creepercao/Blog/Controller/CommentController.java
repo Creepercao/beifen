@@ -28,7 +28,7 @@ public class CommentController {
 
     // 根据用户 UUID 获取评论
     @GetMapping("/user/{userUuid}")
-    public List<Comment> getCommentsByUserUuid(@PathVariable("userUuid") String userUuid) {
+    public List<Comment> getCommentsByUserUuid(@PathVariable("userUuid") Integer userUuid) {
         return commentService.getCommentsByUserUuid(userUuid);
     }
 

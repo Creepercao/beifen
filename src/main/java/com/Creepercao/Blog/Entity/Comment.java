@@ -24,7 +24,7 @@ public class Comment implements Serializable {
     private Integer articleId; // 文章的 ID
 
     @Column(name = "user_uuid", nullable = false) // 存储用户的 UUID，外键
-    private String userUuid; // 用户的 UUID
+    private Integer userUuid; // 用户的 UUID
 
     @Column(nullable = false, columnDefinition = "TEXT") // 评论内容
     private String content;
@@ -48,7 +48,7 @@ public class Comment implements Serializable {
     }
 
     // 全参构造器
-    public Comment(Integer articleId, String userUuid, String content, LocalDateTime time, Integer likes) {
+    public Comment(Integer articleId, Integer userUuid, String content, LocalDateTime time, Integer likes) {
         this.articleId = articleId;
         this.userUuid = userUuid;
         this.content = content;
@@ -64,7 +64,7 @@ public class Comment implements Serializable {
         this.articleId = articleId;
     }
 
-    public void setUserUuid(String userUuid) {
+    public void setUserUuid(Integer userUuid) {
         this.userUuid = userUuid;
     }
 

@@ -32,7 +32,7 @@ public class User implements Serializable {
     @Column(nullable = true, length = 255) // 可空字段，最大长度 255，默认值为 null
     private String password;
 
-    @Column(nullable = true, length = 255, columnDefinition = "varchar(255) default 'src/main/resources/img/defaut.png'")
+    @Column(nullable = true, length = 255, columnDefinition = "varchar(255) default 'src/main/resources/img/defaut2.png'")
     private String avatar;
 
     @Column

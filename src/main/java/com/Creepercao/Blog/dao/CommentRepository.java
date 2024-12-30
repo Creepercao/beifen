@@ -11,7 +11,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findByArticleId(Integer articleId);
 
     // 根据用户 UUID 查询评论
-    List<Comment> findByUserUuid(String userUuid);
+    List<Comment> findByUserUuid(Integer userUuid);
 
     // 判断评论是否存在
     boolean existsById(Integer id);

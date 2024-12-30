@@ -24,7 +24,7 @@ public class CommentService {
     }
 
     // 根据用户 UUID 获取评论
-    public List<Comment> getCommentsByUserUuid(String userUuid) {
+    public List<Comment> getCommentsByUserUuid(Integer userUuid) {
         return commentRepository.findByUserUuid(userUuid);
     }
 

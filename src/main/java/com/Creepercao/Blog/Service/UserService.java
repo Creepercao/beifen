@@ -29,7 +29,7 @@ public class UserService {
     public User saveUser(User user) {
         // 如果用户没有设置头像，则使用默认头像路径
         if (user.getAvatar() == null || user.getAvatar().isEmpty()) {
-            user.setAvatar("/img/defaut.png");
+            user.setAvatar("/img/defaut2.png");
         }
         if (user.getUuid() != null) {
             // 检查用户是否存在
