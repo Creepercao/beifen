@@ -2,6 +2,7 @@ package com.Creepercao.Blog.Service;
 
 import com.Creepercao.Blog.Entity.Favorite;
 import com.Creepercao.Blog.dao.FavoriteRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,9 @@ public class FavoriteService {
         }
     }
 
+
     // 删除收藏
+    @Transactional
     public void removeFavorite(Integer uuid, Integer aid) {
         favoriteRepository.deleteByUuidAndAid(uuid, aid);
     }

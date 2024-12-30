@@ -31,6 +31,7 @@ public class FavoriteController {
                 return ResponseEntity.ok("取消收藏成功");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body("收藏操作失败: " + e.getMessage());
         }
     }
@@ -52,6 +53,7 @@ public class FavoriteController {
             boolean favorited = favoriteService.isFavorited(uuid, aid);
             return ResponseEntity.ok(favorited);
         } catch (Exception e) {
+
             return ResponseEntity.status(500).body(false);
         }
     }
