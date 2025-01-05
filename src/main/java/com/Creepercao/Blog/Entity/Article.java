@@ -48,6 +48,11 @@ public class Article {
     @Column
     private Integer likes;
 
+    @Setter
+    @Getter
+    @Column(columnDefinition = "TINYINT(1)")
+    private Boolean is_top;
+
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {
@@ -55,6 +60,9 @@ public class Article {
         }
         if (this.likes == null)
             this.likes = 0;
+        if (this.is_top==null){
+            this.is_top=false;
+        }
     }
 
 
@@ -73,6 +81,7 @@ public class Article {
                 ", createdAt=" + createdAt +
                 ", name=" + name +
                 ", like=" + likes +
+                ", is_top=" + is_top +
                 '}';
     }
 }

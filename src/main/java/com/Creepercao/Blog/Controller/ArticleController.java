@@ -166,4 +166,16 @@ public class ArticleController {
         matcher.appendTail(updatedContent);
         return updatedContent.toString();
     }
+    @PostMapping("/{id}/top")
+    public ResponseEntity<String> toggleTopStatus(@PathVariable("id") Integer id) {
+        Article article = articleRepository.findById(id).orElse(null);
+        if (article != null) {
+            // 如果文章已经被置顶，取消置顶；否则，设置为置顶
+            article.setIs_top(article.getIs_top() == null || !article.getIs_top());
+            articleRepository.save(article);
+            return ResponseEntity.ok("文章置顶状态已更新");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("文章未找到");
+        }
+    }
 }
